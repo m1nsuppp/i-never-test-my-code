@@ -1,3 +1,9 @@
-export default async function Home() {
-  return <main></main>;
+import { Apply } from './_components/apply';
+
+export default function Home() {
+  return (
+    <main>
+      <Apply />
+    </main>
+  );
 }
