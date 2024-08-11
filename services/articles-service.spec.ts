@@ -4,6 +4,7 @@ import {
 } from '@/repositories/article-repository';
 import { createArticlesService, ArticlesService } from './articles-service';
 import { Article } from '@/types/article';
+import { HTTPError } from '@/lib/http-error';
 
 describe('Articles 서비스', () => {
   let mockHttpClient: { get: jest.Mock };
@@ -144,6 +145,36 @@ describe('Articles 서비스', () => {
     it('특정 카테고리에 게시글이 없을 때 올바른 메시지를 반환해야 한다', () => {
       const message = articlesService.getArticlesResultMessage([], 'backend');
       expect(message).toBe('카테고리 "backend"에 해당하는 게시글이 없습니다.');
+    });
+  });
+
+  describe('HTTP 요청 실패 시, HTTPError throw해야 한다', () => {
+    it('getArticles', async () => {
+      expect.assertions(1);
+
+      mockHttpClient.get.mockRejectedValue(
+        new HTTPError(500, 'Internal Server Error')
+      );
+      try {
+        await articlesService.getArticles();
+        jest.spyOn(articlesService, 'getArticles');
+      } catch (error) {
+        expect(error).toBeInstanceOf(HTTPError);
+      }
+    });
+
+    it('getArticlesByCategory', async () => {
+      expect.assertions(1);
+
+      mockHttpClient.get.mockRejectedValue(
+        new HTTPError(500, 'Internal Server Error')
+      );
+      try {
+        await articlesService.getArticlesByCategory('frontend');
+        jest.spyOn(articlesService, 'getArticlesByCategory');
+      } catch (error) {
+        expect(error).toBeInstanceOf(HTTPError);
+      }
     });
   });
 });
