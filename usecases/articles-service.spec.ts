@@ -1,10 +1,9 @@
-import {
-  ArticlesRepository,
-  createArticlesRepository,
-} from '@/repositories/article-repository';
-import { createArticlesService, ArticlesService } from './articles-service';
-import { Article } from '@/types/article';
+import { type ArticlesRepository } from '@/repositories/article-repository';
+import { type Article } from '@/entities/article';
 import { HTTPError } from '@/lib/http-error';
+import { type ArticlesService } from './articles-service';
+import { createArticlesRepository } from '@/infrastructures/create-articles-repository';
+import { createArticlesService } from '@/infrastructures/create-articles-service';
 
 describe('Articles 서비스', () => {
   let mockHttpClient: { get: jest.Mock };

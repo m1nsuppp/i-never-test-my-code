@@ -1,5 +1,5 @@
-import type { Config, HTTPClient } from './http-client';
-import { HTTPError } from './http-error';
+import type { Config, HTTPClient } from '../lib/http-client';
+import { HTTPError } from '../lib/http-error';
 
 function paramsToString(params: URLSearchParams | undefined): string {
   return params ? `?${params.toString()}` : '';

@@ -1,14 +1,5 @@
-import { ArticlesRepository } from '@/repositories/article-repository';
-import { Article } from '@/types/article';
-
-export type ArticlesService = {
-  getArticles: () => Promise<Article[]>;
-  getArticlesByCategory: (category: Article['category']) => Promise<Article[]>;
-  getArticlesResultMessage: (
-    articles: Article[],
-    category?: Article['category']
-  ) => string;
-};
+import { type ArticlesRepository } from '@/repositories/article-repository';
+import { type ArticlesService } from '@/usecases/articles-service';
 
 export function createArticlesService(
   articlesRepository: ArticlesRepository
