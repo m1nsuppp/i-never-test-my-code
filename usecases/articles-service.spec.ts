@@ -1,179 +1,51 @@
 import { type ArticlesRepository } from '@/repositories/article-repository';
 import { type Article } from '@/entities/article';
-import { HTTPError } from '@/lib/http-error';
-import { type ArticlesService } from './articles-service';
-import { createArticlesRepository } from '@/infrastructures/create-articles-repository';
 import { createArticlesService } from '@/infrastructures/create-articles-service';
+import { HTTPError } from '@/clients/http-client';
 
-describe('Articles 서비스', () => {
-  let mockHttpClient: { get: jest.Mock };
-  let articlesRepository: ArticlesRepository;
-  let articlesService: ArticlesService;
+describe('createArticlesService', () => {
+  let mockArticlesRepository: jest.Mocked<ArticlesRepository>;
 
   beforeEach(() => {
-    mockHttpClient = { get: jest.fn() };
-    articlesRepository = createArticlesRepository(mockHttpClient as any);
-    articlesService = createArticlesService(articlesRepository);
+    mockArticlesRepository = {
+      fetchArticles: jest.fn(),
+    };
   });
 
-  describe('getArticles', () => {
-    it('서버에서 모든 게시글을 가져와야 한다', async () => {
-      const mockArticles: Article[] = [
-        {
-          id: '1',
-          createdAt: '2021-01-01T00:00:00.000Z',
-          title: 'lodash vs underscore',
-          content: 'lodash와 underscore의 차이점에 대해 설명합니다.',
-          category: 'frontend',
-        },
-      ];
-      mockHttpClient.get.mockResolvedValue(mockArticles);
-
-      const result = await articlesService.getArticles();
-      expect(result).toEqual(mockArticles);
-      expect(mockHttpClient.get).toHaveBeenCalledWith('/api/articles');
-    });
+  it('fetchArticles를 가진 ArticlesService를 생성해야 한다', () => {
+    const articlesService = createArticlesService(mockArticlesRepository);
+    expect(articlesService).toHaveProperty('fetchArticles');
+    expect(typeof articlesService.fetchArticles).toBe('function');
   });
 
-  describe('getArticlesByCategory', () => {
-    it('특정 카테고리의 게시글만 필터링해야 한다', async () => {
-      const mockArticles: Article[] = [
-        {
-          id: '1',
-          createdAt: '2021-01-01T00:00:00.000Z',
-          title: 'lodash vs underscore',
-          content: 'lodash와 underscore의 차이점에 대해 설명합니다.',
-          category: 'frontend',
-        },
-        {
-          id: '2',
-          createdAt: '2021-01-02T00:00:00.000Z',
-          title: 'express middleware',
-          content: 'express에서 사용하는 middleware에 대해 설명합니다.',
-          category: 'backend',
-        },
-      ];
-      mockHttpClient.get.mockResolvedValue(mockArticles);
+  it('service.fetchArticles가 호출될 때 repository.fetchArticles를 호출해야 한다', async () => {
+    const articlesService = createArticlesService(mockArticlesRepository);
+    const fixtureArticles: Article[] = [
+      {
+        id: '1',
+        createdAt: '2024-08-18T12:00:00Z',
+        title: '테스트 기사',
+        content: '이것은 테스트 기사입니다',
+        category: 'frontend',
+      },
+    ];
 
-      const result = await articlesService.getArticlesByCategory('frontend');
-      expect(result).toEqual([mockArticles[0]]);
-    });
+    mockArticlesRepository.fetchArticles.mockResolvedValue(fixtureArticles);
+
+    const articles = await articlesService.fetchArticles();
+
+    expect(mockArticlesRepository.fetchArticles).toHaveBeenCalledTimes(1);
+    expect(articles).toEqual(fixtureArticles);
   });
 
-  describe('getArticlesResultMessage', () => {
-    it('게시글이 있을 때 올바른 메시지를 반환해야 한다', () => {
-      const articles: Article[] = [
-        {
-          id: '1',
-          createdAt: '2021-01-01T00:00:00.000Z',
-          title: 'lodash vs underscore',
-          content: 'lodash와 underscore의 차이점에 대해 설명합니다.',
-          category: 'frontend',
-        },
-        {
-          id: '2',
-          createdAt: '2021-01-02T00:00:00.000Z',
-          title: 'express middleware',
-          content: 'express에서 사용하는 middleware에 대해 설명합니다.',
-          category: 'backend',
-        },
-        {
-          id: '3',
-          createdAt: '2021-01-03T00:00:00.000Z',
-          title: 'numpy vs pandas',
-          content: 'numpy와 pandas의 차이점에 대해 설명합니다.',
-          category: 'ai',
-        },
-      ];
-      const message = articlesService.getArticlesResultMessage(articles);
-      expect(message).toBe('총 3개의 게시글이 있습니다.');
-    });
+  it('repository.fetchArticles에서 에러가 발생하면 해당 에러를 전파해야 한다', async () => {
+    const articlesService = createArticlesService(mockArticlesRepository);
 
-    it('게시글이 없을 때 올바른 메시지를 반환해야 한다', () => {
-      const message = articlesService.getArticlesResultMessage([]);
-      expect(message).toBe('게시글이 없습니다.');
-    });
+    mockArticlesRepository.fetchArticles.mockRejectedValue(
+      new HTTPError(500, 'Internal Server Error', {})
+    );
 
-    it('특정 카테고리에 게시글이 있을 때 올바른 메시지를 반환해야 한다', () => {
-      const articles: Article[] = [
-        {
-          id: '1',
-          createdAt: '2021-01-01T00:00:00.000Z',
-          title: 'lodash vs underscore',
-          content: 'lodash와 underscore의 차이점에 대해 설명합니다.',
-          category: 'frontend',
-        },
-        {
-          id: '2',
-          createdAt: '2021-01-02T00:00:00.000Z',
-          title: 'express middleware',
-          content: 'express에서 사용하는 middleware에 대해 설명합니다.',
-          category: 'backend',
-        },
-        {
-          id: '3',
-          createdAt: '2021-01-03T00:00:00.000Z',
-          title: 'numpy vs pandas',
-          content: 'numpy와 pandas의 차이점에 대해 설명합니다.',
-          category: 'ai',
-        },
-        {
-          id: '4',
-          createdAt: '2021-01-04T00:00:00.000Z',
-          title: 'docker compose',
-          content: 'docker compose 사용법에 대해 설명합니다.',
-          category: 'devops',
-        },
-        {
-          id: '5',
-          createdAt: '2021-01-05T00:00:00.000Z',
-          title: 'redux vs mobx',
-          content: 'redux와 mobx의 차이점에 대해 설명합니다.',
-          category: 'frontend',
-        },
-      ];
-      const message = articlesService.getArticlesResultMessage(
-        articles,
-        'frontend'
-      );
-      expect(message).toBe(
-        '카테고리 "frontend"에 해당하는 총 2개의 게시글이 있습니다.'
-      );
-    });
-
-    it('특정 카테고리에 게시글이 없을 때 올바른 메시지를 반환해야 한다', () => {
-      const message = articlesService.getArticlesResultMessage([], 'backend');
-      expect(message).toBe('카테고리 "backend"에 해당하는 게시글이 없습니다.');
-    });
-  });
-
-  describe('HTTP 요청 실패 시, HTTPError throw해야 한다', () => {
-    it('getArticles', async () => {
-      expect.assertions(1);
-
-      mockHttpClient.get.mockRejectedValue(
-        new HTTPError(500, 'Internal Server Error')
-      );
-      try {
-        await articlesService.getArticles();
-        jest.spyOn(articlesService, 'getArticles');
-      } catch (error) {
-        expect(error).toBeInstanceOf(HTTPError);
-      }
-    });
-
-    it('getArticlesByCategory', async () => {
-      expect.assertions(1);
-
-      mockHttpClient.get.mockRejectedValue(
-        new HTTPError(500, 'Internal Server Error')
-      );
-      try {
-        await articlesService.getArticlesByCategory('frontend');
-        jest.spyOn(articlesService, 'getArticlesByCategory');
-      } catch (error) {
-        expect(error).toBeInstanceOf(HTTPError);
-      }
-    });
+    await expect(articlesService.fetchArticles()).rejects.toThrow();
+    expect(mockArticlesRepository.fetchArticles).toHaveBeenCalledTimes(1);
   });
 });
