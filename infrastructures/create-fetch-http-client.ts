@@ -1,8 +1,4 @@
-import {
-  type Config,
-  type HTTPClient,
-  HTTPError,
-} from '../clients/http-client';
+import { type Config, type HTTPClient } from '../clients/http-client';
 
 function paramsToString(params: URLSearchParams | undefined): string {
   return params ? `?${params.toString()}` : '';
@@ -27,7 +23,7 @@ export function createFetchHTTPClient(
     });
 
     if (!response.ok) {
-      throw new HTTPError(response.status, response.statusText, responseBody);
+      throw responseBody;
     }
 
     return responseBody;

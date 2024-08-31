@@ -1,7 +1,7 @@
 import { type ArticlesRepository } from '@/repositories/article-repository';
 import { type Article } from '@/entities/article';
+import { type APIResponseFailure } from '@/dtos/api-response';
 import { createArticlesService } from '@/infrastructures/create-articles-service';
-import { HTTPError } from '@/clients/http-client';
 
 describe('createArticlesService', () => {
   let mockArticlesRepository: jest.Mocked<ArticlesRepository>;
@@ -38,14 +38,22 @@ describe('createArticlesService', () => {
     expect(articles).toEqual(fixtureArticles);
   });
 
-  it('repository.fetchArticles에서 에러가 발생하면 해당 에러를 전파해야 한다', async () => {
+  it('repository.fetchArticles에서 에러가 발생하면 해당 에러에 대한 response body를 throw 한다.', async () => {
     const articlesService = createArticlesService(mockArticlesRepository);
 
-    mockArticlesRepository.fetchArticles.mockRejectedValue(
-      new HTTPError(500, 'Internal Server Error', {})
-    );
+    const fixtureError: APIResponseFailure = {
+      data: null,
+      status: 500,
+      statusText: 'Internal Server Error',
+      error: {
+        message: 'Internal Server Error',
+        code: 500,
+      },
+    };
 
-    await expect(articlesService.fetchArticles()).rejects.toThrow();
+    mockArticlesRepository.fetchArticles.mockRejectedValue(fixtureError);
+
+    await expect(articlesService.fetchArticles()).rejects.toEqual(fixtureError);
     expect(mockArticlesRepository.fetchArticles).toHaveBeenCalledTimes(1);
   });
 });
