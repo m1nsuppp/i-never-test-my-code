@@ -18,7 +18,7 @@ const navigationItems: NavigationItem[] = [
 export function Navigation(): JSX.Element {
   const pathname = usePathname();
 
-  const isCurrentPathname = (href: string) => {
+  const isCurrentPathname = (href: string): boolean => {
     return pathname === href;
   };
 

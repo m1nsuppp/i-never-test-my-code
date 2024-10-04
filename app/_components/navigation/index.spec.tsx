@@ -1,14 +1,16 @@
 import { render, screen } from '@testing-library/react';
 import { Navigation } from '@/app/_components/navigation';
 
+type UsePathnameType = () => string;
+
 // https://github.com/amannn/next-intl/discussions/331
 const mockUsePathname = jest.fn();
 
-jest.mock('next/navigation', () => ({
-  usePathname() {
-    return mockUsePathname();
-  },
-}));
+jest.mock('next/navigation', () => {
+  const usePathname: UsePathnameType = () => mockUsePathname();
+
+  return { usePathname };
+});
 
 test('현재 경로에 해당하는 링크는 aria-current 속성을 page로 가지고 있다.', () => {
   mockUsePathname.mockImplementation(() => '/about');
