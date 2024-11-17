@@ -1,6 +1,6 @@
 'use client';
 
-import { ServiceContext } from '@/app/_contexts/service-context';
+import { ServiceContext } from '@/app/articles/_contexts/service-context';
 import { useQuery } from '@/app/_shared/_hooks/use-query';
 import { useTypedContext } from '@/app/_shared/_hooks/use-typed-context';
 import { Article } from '@/entities/article';
