@@ -1,8 +1,8 @@
 'use client';
 
-import { ServiceContext } from '@/app/articles/_contexts/service-context';
-import { useQuery } from '@/app/_shared/_hooks/use-query';
-import { useTypedContext } from '@/app/_shared/_hooks/use-typed-context';
+import { useQuery } from '@/app/_shared/hooks/use-query';
+import { useTypedContext } from '@/app/_shared/hooks/use-typed-context';
+import { ServiceContext } from '@/app/_shared/providers/service-provider';
 import { Article } from '@/entities/article';
 
 export function ArticleList(): JSX.Element {

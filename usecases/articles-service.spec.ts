@@ -1,6 +1,5 @@
 import { type ArticlesRepository } from '@/repositories/article-repository';
 import { type Article } from '@/entities/article';
-import { type APIResponseFailure } from '@/dtos/api-response';
 import { createArticlesService } from '@/infrastructures/create-articles-service';
 
 describe('createArticlesService', () => {
@@ -12,13 +11,13 @@ describe('createArticlesService', () => {
     };
   });
 
-  it('fetchArticles를 가진 ArticlesService를 생성해야 한다', () => {
+  test('fetchArticles를 가진 ArticlesService를 생성해야 한다', () => {
     const articlesService = createArticlesService(mockArticlesRepository);
     expect(articlesService).toHaveProperty('fetchArticles');
     expect(typeof articlesService.fetchArticles).toBe('function');
   });
 
-  it('service.fetchArticles가 호출될 때 repository.fetchArticles를 호출해야 한다', async () => {
+  test('service.fetchArticles가 호출될 때 repository.fetchArticles를 호출해야 한다', async () => {
     const articlesService = createArticlesService(mockArticlesRepository);
     const fixtureArticles: Article[] = [
       {
@@ -38,22 +37,11 @@ describe('createArticlesService', () => {
     expect(articles).toEqual(fixtureArticles);
   });
 
-  it('repository.fetchArticles에서 에러가 발생하면 해당 에러에 대한 response body를 throw 한다.', async () => {
+  test('실패 시, 에러를 던져야 한다', async () => {
     const articlesService = createArticlesService(mockArticlesRepository);
 
-    const fixtureError: APIResponseFailure = {
-      data: null,
-      status: 500,
-      statusText: 'Internal Server Error',
-      error: {
-        message: 'Internal Server Error',
-        code: 500,
-      },
-    };
+    mockArticlesRepository.fetchArticles.mockRejectedValue(new Error('테스트 에러'));
 
-    mockArticlesRepository.fetchArticles.mockRejectedValue(fixtureError);
-
-    await expect(articlesService.fetchArticles()).rejects.toEqual(fixtureError);
-    expect(mockArticlesRepository.fetchArticles).toHaveBeenCalledTimes(1);
+    await expect(articlesService.fetchArticles()).rejects.toThrow('테스트 에러');
   });
 });

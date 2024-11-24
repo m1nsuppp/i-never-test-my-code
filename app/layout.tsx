@@ -2,7 +2,8 @@ import type { Metadata } from 'next';
 import { Inter } from 'next/font/google';
 import type { PropsWithChildren } from 'react';
 import './globals.css';
-import { ReactQueryProvider } from './_shared/_components/react-query-provider';
+import { ReactQueryProvider } from './_shared/providers/react-query-provider';
+import { ServiceProvider } from './_shared/providers/service-provider';
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -15,7 +16,9 @@ export default function RootLayout({ children }: PropsWithChildren): JSX.Element
   return (
     <html lang="ko">
       <body className={inter.className}>
-        <ReactQueryProvider>{children}</ReactQueryProvider>
+        <ServiceProvider>
+          <ReactQueryProvider>{children}</ReactQueryProvider>
+        </ServiceProvider>
       </body>
     </html>
   );
