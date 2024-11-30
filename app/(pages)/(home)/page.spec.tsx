@@ -9,7 +9,7 @@ describe('ArticlesPage', () => {
     renderArticlesPage();
 
     await waitFor(() => {
-      expect(screen.getByText('loading...')).toBeInTheDocument();
+      expect(screen.getByRole('status')).toBeInTheDocument();
     });
   });
 
