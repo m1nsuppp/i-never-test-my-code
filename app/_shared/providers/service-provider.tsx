@@ -17,7 +17,7 @@ ServiceContext.displayName = 'ServiceContext';
 
 export function ServiceProvider({ children }: { children: ReactNode }): JSX.Element {
   const services = useMemo(() => {
-    const httpClient = createFetchHTTPClient('/api');
+    const httpClient = createFetchHTTPClient('http://localhost:3000/api');
     const articlesRepository = createArticlesRepository(httpClient);
     const articlesService = createArticlesService(articlesRepository);
 
