@@ -1,6 +1,5 @@
 'use client';
 
-import { useQuery } from '@/app/_shared/hooks/use-query';
 import { useTypedContext } from '@/app/_shared/hooks/use-typed-context';
 import { ServiceContext } from '@/app/_shared/providers/service-provider';
 import { Article } from '@/entities/article';

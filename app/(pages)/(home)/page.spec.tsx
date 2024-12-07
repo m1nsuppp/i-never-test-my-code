@@ -21,6 +21,32 @@ describe('ArticlesPage', () => {
       expect(screen.getByText('content')).toBeInTheDocument();
     });
   });
+
+  test('http 요청에 실패할 경우, 에러를 표시한다.', async () => {
+    const queryClient = new QueryClient({
+      defaultOptions: { queries: { retry: false } },
+    });
+
+    render(<ArticlesPage />, {
+      wrapper: ({ children }) => (
+        <ServiceContext.Provider
+          value={{
+            articlesService: {
+              fetchArticles: () => Promise.reject(new Error('Failed to fetch articles')),
+            },
+          }}
+        >
+          <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
+        </ServiceContext.Provider>
+      ),
+    });
+
+    await waitFor(() => {
+      expect(
+        screen.getByRole('heading', { name: '기사를 불러오지 못했어요.' }),
+      ).toBeInTheDocument();
+    });
+  });
 });
 
 function renderArticlesPage(): void {
