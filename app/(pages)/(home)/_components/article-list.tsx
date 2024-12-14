@@ -1,7 +1,7 @@
 'use client';
 
 import { useTypedContext } from '@/app/_shared/hooks/use-typed-context';
-import { ServiceContext } from '@/app/_shared/providers/service-provider';
+import { ServiceContext } from '@/app/_shared/contexts/service-provider';
 import { Article } from '@/entities/article';
 import { useSuspenseQuery } from '@tanstack/react-query';
 

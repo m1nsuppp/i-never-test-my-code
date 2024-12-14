@@ -2,7 +2,7 @@ import { render, waitFor } from '@testing-library/react';
 import ArticlesPage from './page';
 import { screen } from '@testing-library/react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { ServiceContext } from '@/app/_shared/providers/service-provider';
+import { ServiceContext } from '@/app/_shared/contexts/service-provider';
 
 describe('ArticlesPage', () => {
   test('로딩 상태를 표시한다.', async () => {

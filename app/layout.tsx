@@ -2,8 +2,8 @@ import type { Metadata } from 'next';
 import { Inter } from 'next/font/google';
 import type { PropsWithChildren } from 'react';
 import './globals.css';
-import { ReactQueryProvider } from './_shared/providers/react-query-provider';
-import { ServiceProvider } from './_shared/providers/service-provider';
+import { ReactQueryProvider } from './_shared/contexts/react-query-provider';
+import { ServiceProvider } from './_shared/contexts/service-provider';
 
 const inter = Inter({ subsets: ['latin'] });
 
