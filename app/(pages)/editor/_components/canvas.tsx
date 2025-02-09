@@ -8,7 +8,7 @@ type Size = {
   height: number;
 };
 
-const maxSize: Size = {
+const MAX_SIZE: Size = {
   width: 640,
   height: 640,
 } as const;
@@ -17,22 +17,44 @@ export function Canvas(): JSX.Element {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const selectedAspectRatio = useAspectRatioStore((state) => state.aspectRatio);
 
+  const { width, height } = getCanvasSize(selectedAspectRatio, MAX_SIZE);
+
   useEffect(() => {
-    if (!canvasRef.current) {
-      return;
+    if (canvasRef.current) {
+      canvasRef.current.width = width;
+      canvasRef.current.height = height;
     }
+  }, [width, height]);
 
-    const canvas = canvasRef.current;
-    const aspectRatio = selectedAspectRatio.width / selectedAspectRatio.height;
+  return (
+    <canvas
+      ref={canvasRef}
+      style={{
+        border: '1px solid #000000',
+        width,
+        height,
+      }}
+    />
+  );
+}
 
-    if (maxSize.width / maxSize.height > aspectRatio) {
-      canvas.width = maxSize.height * aspectRatio;
-      canvas.height = maxSize.height;
-    } else {
-      canvas.width = maxSize.width;
-      canvas.height = maxSize.width / aspectRatio;
-    }
-  }, [selectedAspectRatio]);
+function getCanvasSize(
+  aspectRatio: { width: number; height: number },
+  maxSize: Size = MAX_SIZE,
+): Size {
+  const ratio = aspectRatio.width / aspectRatio.height;
 
-  return <canvas ref={canvasRef} />;
+  const shouldConstrainWidth = MAX_SIZE.width / ratio > MAX_SIZE.height;
+
+  if (shouldConstrainWidth) {
+    return {
+      width: maxSize.height * ratio,
+      height: maxSize.height,
+    };
+  }
+
+  return {
+    width: maxSize.width,
+    height: maxSize.width / ratio,
+  };
 }
