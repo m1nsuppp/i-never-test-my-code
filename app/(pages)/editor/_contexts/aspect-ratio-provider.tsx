@@ -18,7 +18,9 @@ interface AspectRatioStore {
 const AspectRatioStoreContext = createContext<StoreApi<AspectRatioStore> | undefined>(undefined);
 AspectRatioStoreContext.displayName = 'AspectRatioStoreContext';
 
-export function createAspectRatioStore(initialAspectRatio: AspectRatio) {
+export function createAspectRatioStore(
+  initialAspectRatio: AspectRatio,
+): StoreApi<AspectRatioStore> {
   return createStore<AspectRatioStore>((set) => ({
     aspectRatio: initialAspectRatio,
     setAspectRatio: (aspectRatio) => set({ aspectRatio }),
@@ -30,7 +32,10 @@ interface AspectRatioProviderProps {
   initialAspectRatio: AspectRatio;
 }
 
-export function AspectRatioProvider({ children, initialAspectRatio }: AspectRatioProviderProps) {
+export function AspectRatioProvider({
+  children,
+  initialAspectRatio,
+}: AspectRatioProviderProps): JSX.Element {
   const [store] = useState(() => createAspectRatioStore(initialAspectRatio));
 
   return (
@@ -38,7 +43,7 @@ export function AspectRatioProvider({ children, initialAspectRatio }: AspectRati
   );
 }
 
-export function useAspectRatioStore<T>(selector: (state: AspectRatioStore) => T) {
+export function useAspectRatioStore<T>(selector: (state: AspectRatioStore) => T): T {
   const store = useTypedContext(AspectRatioStoreContext);
 
   return useStore(store, selector);
