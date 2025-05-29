@@ -1,3 +1,5 @@
+// NOTE: 정확한 mocking을 위해 파일명을 navigation.ts로 변경할 것
+
 import mockRouter from 'next-router-mock';
 import { createDynamicRouteParser } from 'next-router-mock/dynamic-routes';
 
